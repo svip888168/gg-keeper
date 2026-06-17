@@ -154,49 +154,8 @@
         
         <div id="status"></div>
         
-        <div class="history">
-            <div class="history-title">使用记录</div>
-            <div id="historyList"></div>
-        </div>
-        
     </div>
 
-    <script>
-        // 加载历史记录
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('ggHistory') || '[]');
-            const historyList = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                historyList.innerHTML = '<div class="history-item">暂无记录</div>';
-                return;
-            }
-            
-            historyList.innerHTML = history.slice(-5).reverse().map(item => 
-                `<div class="history-item">✓ ${item.date} - ${item.size} KB</div>`
-            ).join('');
-        }
-        
-        // 保存历史记录
-        function saveHistory(size) {
-            const history = JSON.parse(localStorage.getItem('ggHistory') || '[]');
-            const now = new Date();
-            const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-            
-            history.push({
-                date: dateStr,
-                size: size,
-                timestamp: now.getTime()
-            });
-            
-            // 只保留最近20条记录
-            if (history.length > 20) {
-                history.shift();
-            }
-            
-            localStorage.setItem('ggHistory', JSON.stringify(history));
-            loadHistory();
-        }
         
         function consumeData() {
             const btn = document.getElementById('btn');
