@@ -105,36 +105,6 @@
             margin-top: 8px;
             opacity: 0.9;
         }
-        .warning {
-            font-size: 12px;
-            color: #dc3545;
-            margin-top: 25px;
-            padding: 12px;
-            background: #fff5f5;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            line-height: 1.6;
-        }
-        .warning strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .history {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .history-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        .history-item {
-            font-size: 12px;
-            color: #888;
-            padding: 5px 0;
-        }
     </style>
 </head>
 <body>
@@ -153,9 +123,6 @@
         </button>
 
         <div id="status"></div>
-
-        <div class="history" id="history"></div>
-
     </div>
 
     <script>
@@ -198,8 +165,6 @@
                         </div>
                     `;
 
-                    saveHistory(sizeInKB);
-
                     btn.disabled = false;
                     btn.innerText = "🔄 再次保号";
                 })
@@ -212,28 +177,6 @@
                     btn.disabled = false;
                 });
         }
-
-        function saveHistory(sizeInKB) {
-            const now = new Date().toLocaleString('zh-CN');
-            let hist = JSON.parse(localStorage.getItem('gg_history') || '[]');
-            hist.unshift({ time: now, size: sizeInKB });
-            hist = hist.slice(0, 10);
-            localStorage.setItem('gg_history', JSON.stringify(hist));
-            loadHistory();
-        }
-
-        function loadHistory() {
-            const hist = JSON.parse(localStorage.getItem('gg_history') || '[]');
-            const el = document.getElementById('history');
-            if (!el) return;
-            el.innerHTML = hist.length
-                ? '<div class="history-title">📜 保号记录</div>' +
-                  hist.map(h => `<div class="history-item">${h.time} · ${h.size} KB</div>`).join('')
-                : '';
-        }
-
-        // 页面加载时显示历史记录
-        window.onload = loadHistory;
     </script>
 </body>
 </html>
