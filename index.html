@@ -141,26 +141,28 @@
     <div class="container">
         <h1>🇬🇧 Giffgaff 保号</h1>
         <div class="subtitle">极简流量消耗工具</div>
-        
+
         <div class="info-box">
             <strong>本次将消耗：</strong>
             约 120 KB 数据流量<br>
             预计费用：2-3 便士 (£0.02-0.03)
         </div>
-        
+
         <button id="btn" onclick="consumeData()">
             🚀 开始保号
         </button>
-        
+
         <div id="status"></div>
-        
+
+        <div class="history" id="history"></div>
+
     </div>
 
-        
+    <script>
         function consumeData() {
             const btn = document.getElementById('btn');
             const status = document.getElementById('status');
-            
+
             btn.disabled = true;
             status.className = 'loading';
             status.innerHTML = "📡 正在连接服务器...<br><div class='stats'>请保持网络连接</div>";
@@ -168,12 +170,12 @@
             // 防缓存：添加时间戳
             const timestamp = new Date().getTime();
             const randomStr = Math.random().toString(36).substring(7);
-            const fileUrl = `payload.txt?t=${timestamp}&r=${randomStr}`; 
+            const fileUrl = `payload.txt?t=${timestamp}&r=${randomStr}`;
 
             const startTime = new Date().getTime();
 
             fetch(fileUrl, {
-                cache: 'no-store',  // 强制不使用缓存
+                cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
                     'Pragma': 'no-cache'
@@ -186,7 +188,7 @@
                 .then(blob => {
                     const sizeInKB = (blob.size / 1024).toFixed(2);
                     const duration = ((new Date().getTime() - startTime) / 1000).toFixed(2);
-                    
+
                     status.className = 'success';
                     status.innerHTML = `
                         ✅ 保号成功！
@@ -195,10 +197,9 @@
                             耗时：${duration} 秒
                         </div>
                     `;
-                    
-                    // 保存记录
+
                     saveHistory(sizeInKB);
-                    
+
                     btn.disabled = false;
                     btn.innerText = "🔄 再次保号";
                 })
@@ -211,7 +212,26 @@
                     btn.disabled = false;
                 });
         }
-        
+
+        function saveHistory(sizeInKB) {
+            const now = new Date().toLocaleString('zh-CN');
+            let hist = JSON.parse(localStorage.getItem('gg_history') || '[]');
+            hist.unshift({ time: now, size: sizeInKB });
+            hist = hist.slice(0, 10);
+            localStorage.setItem('gg_history', JSON.stringify(hist));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const hist = JSON.parse(localStorage.getItem('gg_history') || '[]');
+            const el = document.getElementById('history');
+            if (!el) return;
+            el.innerHTML = hist.length
+                ? '<div class="history-title">📜 保号记录</div>' +
+                  hist.map(h => `<div class="history-item">${h.time} · ${h.size} KB</div>`).join('')
+                : '';
+        }
+
         // 页面加载时显示历史记录
         window.onload = loadHistory;
     </script>
